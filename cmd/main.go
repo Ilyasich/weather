@@ -1,19 +1,17 @@
 package main
 
 import (
-	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/Ilyasich/weather/internal/repostories/memory"
+	"github.com/Ilyasich/weather/internal/services"
+	"github.com/Ilasich/weather/internal/transport/rest"
+
+	
 )
 
 func main() {
-	gin.SetMode(gin.ReleaseMode)
+	repo := &memory.Repository{}
+	service := services.New(repo)
 
-	r := gin.Default()
-
-	r.GET("/", func(ctx *gin.Context) {
-		ctx.String(http.StatusOK, "hello world")
-	})
-
-	r.Run(":8080")
+	repo.NewServer(service).Run(":8080")
 }
