@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/Ilyasich/weather/internal/config"
-	"github.com/Ilyasich/weather/internal/models"
+	"github.com/Ilyasich/weather/internal/models" 
 	"github.com/gin-gonic/gin"
 )
 
-func handleCurrentWeather(r *Rest)(ctx *gin.Context) {
+func HandleCurrentWeather(r *Rest)(ctx *gin.Context) {
 	lang := config.Lang
 
 	city := ctx.Query("city")
@@ -19,8 +19,8 @@ func handleCurrentWeather(r *Rest)(ctx *gin.Context) {
 	}
 
 	
-
-	weatherData, err:= GetCurrentWeather(city, lang)
+//запрос к API погоды getCurrentWeather
+	weatherData, err:= r.service.service.GetCurrentWeather(city, lang)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось получить текущую погоду"})
 		return

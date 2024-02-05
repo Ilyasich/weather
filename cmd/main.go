@@ -12,6 +12,7 @@ import (
 func main() {
 	repo := &memory.Repository{}
 	service := services.New(repo)
+	server := rest.NewServer(service)
 
-	repo.NewServer(service).Run(":8080")
+	rest.NewServer(service).Run(":8080")
 }

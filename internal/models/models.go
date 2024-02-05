@@ -1,5 +1,11 @@
 package models
 
+
+type User struct {
+	Name string `json:"name"`
+}
+
+
 type Favorite struct {
 	City       string   `json:"city"`
 	Paramertrs []string `json:"parametrs"`

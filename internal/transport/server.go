@@ -1,18 +1,15 @@
 package rest
 
 import (
-	
 	"github.com/gin-gonic/gin"
 
 	"github.com/Ilyasich/weather/internal/config"
 	"github.com/Ilyasich/weather/internal/services"
 )
 
-
 type Rest struct {
 	service *services.Service
 }
-
 
 func NewServer(service services.Service) *gin.Engine {
 	if config.DebugMode {
@@ -21,9 +18,9 @@ func NewServer(service services.Service) *gin.Engine {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-		r := gin.Default()
-		rest := Rest{service}
+	r := gin.Default()
+	rest := Rest{service}
 
-		r.GET("/users/:name/exists", rest.userExists)
-		return r
-	}
+	r.GET("/users/:name/exists", rest.userExists)
+	return r
+}
