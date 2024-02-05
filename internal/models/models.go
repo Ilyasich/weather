@@ -5,7 +5,7 @@ type Favorite struct {
 	Paramertrs []string `json:"parametrs"`
 }
 
-type WeatherResponse struct {
+type CurrentWeatherResponse struct {
 	Location struct {
 		Name      string  `json:"name"`
 		Region    string  `json:"region"`

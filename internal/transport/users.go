@@ -1,30 +1,31 @@
 package rest
 
 import (
-	"fmt"
 
-	"github.com/go-resty/resty/v2"
+	"net/http"
+
+	"github.com/Ilyasich/weather/internal/config"
+	"github.com/Ilyasich/weather/internal/models"
+	"github.com/gin-gonic/gin"
 )
 
-const (
-	url    = "https://api.weatherapi.com/v1/"
-	apiKey = "3caf85347f7e49e481d110120241401"
-)
+func handleCurrentWeather(r *Rest)(ctx *gin.Context) {
+	lang := config.Lang
 
-func WeatherGet() string {
-
-	client := resty.New()
-
-	resp, err := client.R().
-		SetQueryParams(map[string]string{
-			"key": apiKey,
-			"q":   "Batumi",
-		}).
-		Get(url + "http://api.weatherapi.com/v1/current.json")
-
-	if err != nil {
-		return fmt.Sprintf("Не удалось узнать текущую погоду: %v", err)
+	city := ctx.Query("city")
+	if city == "" {
+		ctx.JSON(400, gin.H{"error": "Требуется параметр city"})
+		return
 	}
 
-	return resp.String()
+	
+
+	weatherData, err:= GetCurrentWeather(city, lang)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось получить текущую погоду"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, weatherData)
 }
+
