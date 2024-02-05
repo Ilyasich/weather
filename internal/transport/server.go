@@ -21,6 +21,7 @@ func NewServer(service services.Service) *gin.Engine {
 	r := gin.Default()
 	rest := Rest{service}
 
+	//тут дергаем ручки
 	r.GET("/users/:name/exists", rest.userExists)
 	return r
 }

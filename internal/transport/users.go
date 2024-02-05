@@ -1,15 +1,41 @@
 package rest
 
 import (
-
 	"net/http"
 
 	"github.com/Ilyasich/weather/internal/config"
-	"github.com/Ilyasich/weather/internal/models" 
+	"github.com/Ilyasich/weather/internal/models"
 	"github.com/gin-gonic/gin"
 )
 
-func HandleCurrentWeather(r *Rest)(ctx *gin.Context) {
+
+//тут пишем асе функции
+
+
+func (s *Rest) createUser(ctx *gin.Context) {
+	var user models.User
+	err := ctx.BindJSON(&user)
+	if err != nil {
+		ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	err = s.service.CreateNewUser(ctx, user)
+	if err != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+}
+
+func (s *Rest) userExists(ctx *gin.Context) {
+	ok, err := s.service.UserExists(ctx, ctx.Param("name"))
+	if err != nil {
+		ctx.AbortWithError(http.StatusInternalServerError, err)
+		return
+
+	}
+}
+
+func HandleCurrentWeather(r *Rest) (ctx *gin.Context) {
 	lang := config.Lang
 
 	city := ctx.Query("city")
@@ -18,9 +44,8 @@ func HandleCurrentWeather(r *Rest)(ctx *gin.Context) {
 		return
 	}
 
-	
-//запрос к API погоды getCurrentWeather
-	weatherData, err:= r.service.service.GetCurrentWeather(city, lang)
+	//запрос к API погоды getCurrentWeather
+	weatherData, err := r.service.GetCurrentWeather(city, lang)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Не удалось получить текущую погоду"})
 		return
@@ -28,4 +53,3 @@ func HandleCurrentWeather(r *Rest)(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, weatherData)
 }
-
