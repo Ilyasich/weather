@@ -19,9 +19,11 @@ func NewServer(service services.Service) *gin.Engine {
 	}
 
 	r := gin.Default()
-	rest := Rest{service}
+	rest := Rest{&services.Service{}}
 
 	//тут дергаем ручки
 	r.GET("/users/:name/exists", rest.userExists)
 	return r
+
+	r.POST("/favorites", rest.CreateFovorite)
 }
