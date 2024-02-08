@@ -12,7 +12,7 @@ import (
 //тут пишем все функции
 
 
-func (s *Rest) createUser(ctx *gin.Context) {
+func (s *Rest) CreateUser(ctx *gin.Context) {
 	var user models.User
 	err := ctx.BindJSON(&user)
 	if err != nil {
@@ -27,7 +27,7 @@ func (s *Rest) createUser(ctx *gin.Context) {
 }
 
 //?
-func (s *Rest) userExists(ctx *gin.Context) {
+func (s *Rest) UserExists(ctx *gin.Context) {
 	ok, err := s.service.UserExists(ctx, ctx.Param("name"))
 	if err != nil {
 		ctx.AbortWithError(http.StatusInternalServerError, err)
@@ -54,6 +54,12 @@ if err := s.service.SaveFavorite(ctx, token, models.Favorite{}); err != nil {
 }
 
 ctx.JSON(http.StatusOK, gin.H{"message":"Успешно сохранено"})
+
+}
+
+func (r *Rest) GetFavorite(ctx *gin.Context) {
+	token := ctx.Param("tocken")
+	
 
 }
 
