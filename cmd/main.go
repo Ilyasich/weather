@@ -35,8 +35,8 @@ func main() {
 
 	repo := &memory.Repository{}
 	service := services.New(repo)
-
 	server := rest.NewServer(lg, cfg.Server, service)
+	server.Run(":8080")
 
 	//мягкая остановка сервера
 	go func() {
