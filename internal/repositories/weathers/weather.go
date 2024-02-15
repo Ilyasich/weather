@@ -5,18 +5,20 @@ import (
 
 	
 	"github.com/Ilyasich/weather/internal/transport"
+	"github.com/Ilyasich/weather/internal/config"
 
 	"fmt"
 )
 
+// ревлизуем походы во внешние API 
 
-func main() {
+func GetCurrentWeather() {
 	client := resty.New()
 
 	resp, err := client.R().
 	SetQueryParams(map[string]string{
-		"q":    rest.City,
-		"key":  rest.Apikey,
+		"q":    config.City,
+		"key":  config.Apikey,
 	}).
 	Get("https://api.weatherapi.com/v1/current.json")
 
