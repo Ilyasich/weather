@@ -6,9 +6,13 @@ import (
 	"github.com/Ilyasich/weather/internal/models"
 )
 
-type UsersRepository interface {//интерфейс с двумя методами
+
+
+//интерфейс c методами
+type UsersRepository interface {
 	AddUser(models.User)//метод
 	FindUser(string) bool//метод
+	GetFavorite(userToken string) ([]models.Favorite, error)
 }
 
 //Эта структура используется для предоставления сервисных функций, связанных с пользователями.
@@ -38,7 +42,7 @@ func (s *Service) UserExists(ctx context.Context, name string) (bool, error) {
 
 
 
-// //??? метод сохранить favorit
-func (s *Service) GetFavorites(ctx context.Context, userToken string) (error) {
-	return s.repo.GetFavorites(userToken)
-}
+// //??? метод получить favorit
+// func (s *Service) GetFavorites(ctx context.Context, userToken string) (error) {
+// 	return s.repo.GetFavorites()
+// }

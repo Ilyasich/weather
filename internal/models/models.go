@@ -1,17 +1,17 @@
 package models
 
 
+
+var Favorites = make(map[string][]Favorite)
+
 type User struct {
 	Name string `json:"name"`
 }
 
 type Favorite struct {
-	City       string `json:"city"`
+	City       string   `json:"city"`
 	Parameters []string `json:"parameters"`
 }
-
-//var Bookmarks = make(map[string][]Favorite)
-var Favorites = make(map[string][]Favorite)
 
 type WeatherResponse struct {
 	Location struct {

@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"fmt"
+	//"fmt"
 	"net/http"
-	"os/user"
+	//"os/user"
 
 	"github.com/Ilyasich/weather/internal/config"
 	"github.com/Ilyasich/weather/internal/models"
@@ -11,11 +11,11 @@ import (
 )
 
 //Метод `createUser` обрабатывает POST-запрос на создание нового пользователя.
-func (s *Rest) createUser(ctx *gin.Context) {
+func (s *Rest) CreateUser(ctx *gin.Context) {
 	var user models.User
 	err := ctx.BindJSON(&user)//преобразует JSON в объект модели `User` 
 	if err != nil {
-		s.lg.Error("Invalid body")
+		//s.lg.Error("Invalid body")
 		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
@@ -71,34 +71,60 @@ func (q *Rest) GetFavorites(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, favorites)
 }
 
-func (q *Rest) handleCurrentWeather(ctx *gin.Context) {
-	//city := ctx.Query("city")
+// func (q *Rest) createFavorite(ctx *gin.Context) {
+// 	var fav models.Favorite
+// 		if err := ctx.ShouldBindJSON(&fav); err != nil {
+// 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 			return
+// 		}
+// 		login := ctx.Param("login")
+// 		models.Favorites[login] = fav
+// 		ctx.JSON(http.StatusOK, gin.H{"status": "ok"})
+// 	}
 	
-	url := fmt.Sprintf("%weather.json?key=%s&q=%s", config.City, config.Apikey)
-	ctx.String(http.StatusOK, "city")
-	resp, err := http.Get(url)
+
+func (q *Rest) handleCurrentWeather(ctx *gin.Context) {
+	city := ctx.Query("city")
+
+
+	if city == "" {
+		// Если город не указан, получаем список избранных городов пользователя
+		favorites, err := q.service.GetFavorites(q, models.User)
+		if err != nil || len(favorites) == 0 {
+			// Если у пользователя нет избранных городов, используем город по умолчанию
+			city = config.DefoultCity
+		} else {
+			// Используем город из первой закладки
+			city = favorites[0].City
+		}
+	}
+
+
+	weatherData, err := q.service.GetCurrentWeather(city, config.Lang)
 	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{"data": url})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get current weather"})
 		return
 	}
-	defer resp.Body.Close()
 
-	city := ctx.Query("city")
-		if city == "" {
-			favorites, err := q.service.GetFavorites()
-			if err != nil {
-				city = config.City
-			}
-
-			
-		}
-		// Здесь вы можете добавить логику для получения погоды для города.
-		ctx.JSON(http.StatusOK, gin.H{"city": city, "weather": "Sunny"})
-	
-	
-
-	ctx.JSON(resp.StatusCode, resp.Body)
+	// Отправляем полученные данные о погоде клиенту
+	ctx.JSON(http.StatusOK, weatherData)
 }
+	
+	// url := fmt.Sprintf("weather.json?key=%s&q=%s", config.City, config.Apikey)
+	// ctx.String(http.StatusOK, "city")
+	// resp, err := http.Get(url)
+	// if err != nil {
+	// 	ctx.JSON(http.StatusOK, gin.H{"data": url})
+	// 	return
+	// }
+	// defer resp.Body.Close()
+	
+	
+	// ctx.JSON(resp.StatusCode, resp.Body)
+
+
+
+
 
 
 

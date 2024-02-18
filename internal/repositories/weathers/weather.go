@@ -1,30 +1,40 @@
 package main
 
 import (
+	"encoding/json"
+
 	"github.com/go-resty/resty/v2"
 
-	
-	//"github.com/Ilyasich/weather/internal/transport/rest"
 	"github.com/Ilyasich/weather/internal/config"
+	"github.com/Ilyasich/weather/internal/models"
 
-	"fmt"
 )
 
-// ревлизуем походы во внешние API 
+// ревлизуем походы во внешние API
 
-func GetCurrentWeather() {
+//принимает город и язык возвращает ошибку и структуру в моделях
+func GetCurrentWeather(city, lang string) (*models.WeatherResponse, error) {
 	client := resty.New()
 
 	resp, err := client.R().
 	SetQueryParams(map[string]string{
-		"q":    config.City,
+		"q":    city,
 		"key":  config.Apikey,
+		"lang": lang,
 	}).
 	Get("https://api.weatherapi.com/v1/current.json")
 
-	fmt.Println(resp, err)
+	if err != nil {
+		return nil, err
+	}
+//разджейсониваем структуру погоды
+	var weatherResponse models.WeatherResponse
+	err = json.Unmarshal(resp.Body(), &weatherResponse)
+	if err != nil {
+		return nil, err
+	}
+	return &weatherResponse, nil
 
-	
 }
 
 
