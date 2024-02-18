@@ -1,14 +1,16 @@
 package rest
 
-
 import (
+	"fmt"
 	"net/http"
+	"os/user"
 
+	"github.com/Ilyasich/weather/internal/config"
 	"github.com/Ilyasich/weather/internal/models"
 	"github.com/gin-gonic/gin"
 )
 
-//Метод `createUser` обрабатывает POST-запрос на создание нового пользователя. 
+//Метод `createUser` обрабатывает POST-запрос на создание нового пользователя.
 func (s *Rest) createUser(ctx *gin.Context) {
 	var user models.User
 	err := ctx.BindJSON(&user)//преобразует JSON в объект модели `User` 
@@ -56,15 +58,47 @@ func (q *Rest) SaveFavorites(ctx *gin.Context) {
 		Parameters: favoriteReq.Parameters,
 	}
 
-	models.Bookmarks[login] = append(models.Bookmarks[login], f)
+	models.Favorites[login] = append(models.Favorites[login], f)
 	
 }
 
 func (q *Rest) GetFavorites(ctx *gin.Context) {
 	login := ctx.Param("login")
-	favorites, ok := models.Bookmarks[login]
+	favorites, ok := models.Favorites[login]
 	if !ok {
 		ctx.JSON(http.StatusOK, gin.H{"favorites": models.Favorite{}})
 	}
 	ctx.JSON(http.StatusOK, favorites)
 }
+
+func (q *Rest) handleCurrentWeather(ctx *gin.Context) {
+	//city := ctx.Query("city")
+	
+	url := fmt.Sprintf("%weather.json?key=%s&q=%s", config.City, config.Apikey)
+	ctx.String(http.StatusOK, "city")
+	resp, err := http.Get(url)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{"data": url})
+		return
+	}
+	defer resp.Body.Close()
+
+	city := ctx.Query("city")
+		if city == "" {
+			favorites, err := q.service.GetFavorites()
+			if err != nil {
+				city = config.City
+			}
+
+			
+		}
+		// Здесь вы можете добавить логику для получения погоды для города.
+		ctx.JSON(http.StatusOK, gin.H{"city": city, "weather": "Sunny"})
+	
+	
+
+	ctx.JSON(resp.StatusCode, resp.Body)
+}
+
+
+

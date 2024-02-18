@@ -1,11 +1,12 @@
 package rest
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/Ilyasich/weather/internal/services"
 	"github.com/Ilyasich/weather/internal/config"
+	"github.com/Ilyasich/weather/internal/services"
+	
+	"github.com/gin-gonic/gin"
 
-
+	//"github.com/Ilyasich/weather/internal/rest"
 
 	"fmt"
 	"net/http"
@@ -39,8 +40,18 @@ func NewServer(service *services.Service) *gin.Engine {
 		ctx.JSON(resp.StatusCode, resp.Body)
 	})
 
+
+	g.GET("/users/:name/exists", rest.UserExists)//проверка существования пользователя
 	g.POST("/users", rest.createUser)
 	
+
+
+	g.GET("/weather/current", rest.handleCurrentWeather)//получение текущая погода
+	g.POST("/favorites", rest.createFavorite)
+	g.GET("/favorites", rest.getFavorites)
+	g.DELETE("/favorites/:city", rest.deleteFavorite)
+
+
 return g
 
 }

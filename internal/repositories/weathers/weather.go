@@ -4,7 +4,7 @@ import (
 	"github.com/go-resty/resty/v2"
 
 	
-	"github.com/Ilyasich/weather/internal/transport"
+	//"github.com/Ilyasich/weather/internal/transport/rest"
 	"github.com/Ilyasich/weather/internal/config"
 
 	"fmt"

@@ -36,7 +36,9 @@ func (s *Service) UserExists(ctx context.Context, name string) (bool, error) {
 	return ok, nil
 }
 
-//??? метод сохранить favorit
-func (s *Service) SaveFavorites(ctx context.Context, models.Favorite) error {
-	return s.repo.SaveFavorites(models.Favorite)
+
+
+// //??? метод сохранить favorit
+func (s *Service) GetFavorites(ctx context.Context, userToken string) (error) {
+	return s.repo.GetFavorites(userToken)
 }
