@@ -1,7 +1,7 @@
 package rest
 
 import (
-	//"fmt"
+	"fmt"
 	"net/http"
 	//"os/user"
 
@@ -84,47 +84,51 @@ func (q *Rest) GetFavorites(ctx *gin.Context) {
 	
 
 func (q *Rest) handleCurrentWeather(ctx *gin.Context) {
-	city := ctx.Query("city")
+	
+
+	// if city == "" {
+	// 	// Если город не указан, получаем список избранных городов пользователя
+	// 	favorites, err := q.service.GetFavorites(q, models.User)
+	// 	if err != nil || len(favorites) == 0 {
+	// 		// Если у пользователя нет избранных городов, используем город по умолчанию
+	// 		city = config.DefoultCity
+	// 	} else {
+	// 		// Используем город из первой закладки
+	// 		city = favorites[0].City
+	// 	}
+	// }
 
 
-	if city == "" {
-		// Если город не указан, получаем список избранных городов пользователя
-		favorites, err := q.service.GetFavorites(q, models.User)
-		if err != nil || len(favorites) == 0 {
-			// Если у пользователя нет избранных городов, используем город по умолчанию
-			city = config.DefoultCity
-		} else {
-			// Используем город из первой закладки
-			city = favorites[0].City
-		}
-	}
+// 	weatherData, err := q.service.GetCurrentWeather(city, config.Lang)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get current weather"})
+// 		return
+// 	}
+
+// 	// Отправляем полученные данные о погоде клиенту
+// 	ctx.JSON(http.StatusOK, weatherData)
+// }
+	
 
 
-	weatherData, err := q.service.GetCurrentWeather(city, config.Lang)
+city := ctx.Query("city")
+
+//Как правильно передать сюда URL? 
+	url := fmt.Sprintf("weather.json?key=%s&q=%s", config.City, config.Api_key)
+	ctx.String(http.StatusOK, "city")
+	resp, err := http.Get(url)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get current weather"})
+		ctx.JSON(http.StatusOK, gin.H{"city": city})
 		return
 	}
+	defer resp.Body.Close()
+	
+	
+	ctx.JSON(resp.StatusCode, resp.Body)
 
-	// Отправляем полученные данные о погоде клиенту
-	ctx.JSON(http.StatusOK, weatherData)
+
+
+
 }
-	
-	// url := fmt.Sprintf("weather.json?key=%s&q=%s", config.City, config.Apikey)
-	// ctx.String(http.StatusOK, "city")
-	// resp, err := http.Get(url)
-	// if err != nil {
-	// 	ctx.JSON(http.StatusOK, gin.H{"data": url})
-	// 	return
-	// }
-	// defer resp.Body.Close()
-	
-	
-	// ctx.JSON(resp.StatusCode, resp.Body)
-
-
-
-
-
 
 

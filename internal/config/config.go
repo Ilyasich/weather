@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 
 	"github.com/caarlos0/env"
@@ -10,11 +11,21 @@ import (
 var DebugMode bool = false
 
 const (
-	Apikey string = "3caf85347f7e49e481d110120241401"
+
 	City   string = "Batumi"
 	Lang   string = "RU"
 	DefoultCity string = "Kazan"
 )
+
+var Api_key string
+
+func reads(){
+Api_key = os.Getenv("API_KEY")
+if Api_key == "" {
+	log.Fatal("API_KEY is not avalible. ")
+}
+
+}
 
 
 //конфигурационный параметр

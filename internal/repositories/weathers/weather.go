@@ -19,7 +19,7 @@ func GetCurrentWeather(city, lang string) (*models.WeatherResponse, error) {
 	resp, err := client.R().
 	SetQueryParams(map[string]string{
 		"q":    city,
-		"key":  config.Apikey,
+		"key":  config.Api_key,
 		"lang": lang,
 	}).
 	Get("https://api.weatherapi.com/v1/current.json")
