@@ -12,7 +12,14 @@ import (
 type UsersRepository interface {
 	AddUser(models.User)//метод
 	FindUser(string) bool//метод
-	GetFavorite(userToken string) ([]models.Favorite, error)
+	GetFavorite(userToken string) ([]models.FavoriteCity, error)
+	GetCurrentWeather(userToken string) (models.WeatherResponse)
+	GetFavorites(userToken string) ([]models.FavoriteCity, error)
+	SaveFavorite(userToken string, favorite models.FavoriteCity) error
+	DeleteFavorite(userToken, city string) error
+	SaveToken(token string, username string)
+
+
 }
 
 //Эта структура используется для предоставления сервисных функций, связанных с пользователями.
@@ -30,7 +37,6 @@ func New(repo UsersRepository) Service {
 //Метод структуры принимает контекст и пользователя `user` типа `models.User` в качестве параметров. Внутри метода вызывается метод `AddUser` чтобы добавить нового пользователя.
 func (s *Service) CreateNewUser(ctx context.Context, user models.User) error {
 	s.repo.AddUser(user)
-
 	return nil
 }
 
@@ -42,7 +48,27 @@ func (s *Service) UserExists(ctx context.Context, name string) (bool, error) {
 
 
 
-// //??? метод получить favorit
-// func (s *Service) GetFavorites(ctx context.Context, userToken string) (error) {
-// 	return s.repo.GetFavorites()
-// }
+// метод получить favorit
+func (s *Service) GetFavorites(ctx context.Context, userToken string) ([]models.FavoriteCity, error) {
+	return s.repo.GetFavorites(userToken)
+}
+
+
+func (s *Service) GetCurrentWeather(ctx context.Context, userToken string) ([]models.FavoriteCity, error) {
+	return s.repo.GetFavorites(userToken)
+}
+
+
+// func (s *Service) createFavorite(ctx context.Context)
+
+
+
+// func (s *Service) getFavorites(ctx context.Context)
+
+
+// func (s *Service) deleteFavorite(ctx context.Context)
+
+
+
+
+
