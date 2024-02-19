@@ -10,8 +10,8 @@ import (
 
 //интерфейс c методами
 type UsersRepository interface {
-	AddUser(models.User)//метод
-	FindUser(string) bool//метод
+	AddUser(models.User)
+	FindUser(string) bool
 	GetFavorite(userToken string) ([]models.FavoriteCity, error)
 	GetCurrentWeather(userToken string) (models.WeatherResponse)
 	GetFavorites(userToken string) ([]models.FavoriteCity, error)
@@ -19,8 +19,8 @@ type UsersRepository interface {
 	DeleteFavorite(userToken, city string) error
 	SaveToken(token string, username string)
 
-
 }
+
 
 //Эта структура используется для предоставления сервисных функций, связанных с пользователями.
 type Service struct {
@@ -58,15 +58,9 @@ func (s *Service) GetCurrentWeather(ctx context.Context, userToken string) ([]mo
 	return s.repo.GetFavorites(userToken)
 }
 
-
-// func (s *Service) createFavorite(ctx context.Context)
-
-
-
-// func (s *Service) getFavorites(ctx context.Context)
-
-
-// func (s *Service) deleteFavorite(ctx context.Context)
+func (s *Service) SaveFavorite(ctx context.Context, userToken string, favorite models.FavoriteCity) error {
+	return s.repo.SaveFavorite(userToken, favorite)
+}
 
 
 

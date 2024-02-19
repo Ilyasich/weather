@@ -73,35 +73,41 @@ func (q *Rest) GetFavorites(ctx *gin.Context) {
 }
 
 
-func (r *Rest) createFavorite(c *gin.Context) {
+func (q *Rest) createFavorite(ctx *gin.Context) {
 
-	username, ok := GetUserFromContext(c)
+	username, ok := GetUserFromContext(ctx)
 	if !ok {
 		return
 	}
 
 	var favorite models.FavoriteCity
-	if err := c.BindJSON(&favorite); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+	if err := ctx.BindJSON(&favorite); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
 	// Использование извлеченного имени пользователя для сохранения избранного
-	if err := r.services.SaveFavorite(c, username, favorite); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save favorite"})
+	if err := q.service.SaveFavorite(ctx, username, favorite); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save favorite"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Favorite saved successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Favorite saved successfully"})
 }
 	
 
 func (q *Rest) handleCurrentWeather(ctx *gin.Context) {
-	city := ctx.Query("city")
+	
+	username, ok := GetUserFromContext(ctx)
+	if !ok {
+		return
+	}
 
+	city := ctx.Query("city")
+	
 	if city == "" {
 		// Если город не указан, получаем список избранных городов пользователя
-		favorites, err := q.service.GetFavorites(q, models.User)
+		favorites, err := q.service.GetFavorites(ctx, username)
 		if err != nil || len(favorites) == 0 {
 			// Если у пользователя нет избранных городов, используем город по умолчанию
 			city = config.DefoultCity
@@ -111,7 +117,7 @@ func (q *Rest) handleCurrentWeather(ctx *gin.Context) {
 		}
 	}
 
-	weatherData, err := q.service.GetCurrentWeather(city, config.Lang)
+	weatherData, err := q.service.GetCurrentWeather(ctx, config.Lang)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get current weather"})
 		return
