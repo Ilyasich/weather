@@ -17,7 +17,6 @@ const (
 	DefoultCity string = "Kazan"
 )
 
-
 // конфигурационный параметр
 type Config struct {
 	Server ServerConfig
@@ -28,7 +27,6 @@ type ServerConfig struct {
 	DebugMode  bool   `env:"DEBUG" toml:"debug_mode"`
 	ServerHost string `env:"SERVER_HOST" envDefault:":8080" toml:"server_host"`
 }
-
 
 func readApi() {
 	Api_key = os.Getenv("API_KEY")
@@ -63,5 +61,3 @@ func ReadFile(path string) (Config, error) {
 		srvCfg,
 	}, err
 }
-
-
