@@ -35,20 +35,3 @@ func GetCurrentWeather(city, lang string) (*models.WeatherResponse, error) {
 	return &weatherResponse, nil
 
 }
-
-// const(
-// 	apiKey = "3caf85347f7e49e481d110120241401"
-// )
-
-// func main() {
-// 	client := resty.New()
-
-// 	resp, err := client.R().
-// 	SetQueryParams(map[string]string{
-// 		"key": apiKey,
-// 		"q": "Batumi",
-// 	}).
-// 	Get("https://api.weatherapi.com/v1/current.json") //дергаем ручку за путь
-
-// 	 fmt.Println(resp, err)
-// }

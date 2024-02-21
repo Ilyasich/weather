@@ -23,8 +23,12 @@ func NewServer(service *services.Service) *gin.Engine {
 	rest := Rest{service}
 
 	g.GET("/users/:name/exists", rest.userExists) //проверка существования пользователя
-	g.POST("/users", rest.CreateUser)
+	g.POST("/users", rest.createUser)
+	g.POST("/login", rest.login)
 
+
+
+	
 	g.GET("/weather/current", rest.handleCurrentWeather) //получение текущая погода
 	g.POST("/favorites", rest.createFavorite)
 	g.GET("/favorites", rest.getFavorites)

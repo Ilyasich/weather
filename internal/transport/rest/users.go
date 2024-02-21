@@ -1,6 +1,8 @@
 package rest
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"net/http"
 
 	"github.com/Ilyasich/weather/internal/config"
@@ -10,7 +12,7 @@ import (
 )
 
 // Метод `createUser` обрабатывает POST-запрос на создание нового пользователя.
-func (s *Rest) CreateUser(ctx *gin.Context) {
+func (g *Rest) createUser(ctx *gin.Context) {
 	var user models.User
 	err := ctx.BindJSON(&user) //преобразует JSON в объект модели `User`
 	if err != nil {
@@ -18,7 +20,7 @@ func (s *Rest) CreateUser(ctx *gin.Context) {
 		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	err = s.service.CreateNewUser(ctx, user) //создает нового пользователя в хранилище данных.
+	err = g.service.CreateNewUser(ctx, user) //создает нового пользователя в хранилище данных.
 	if err != nil {
 		ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -26,8 +28,8 @@ func (s *Rest) CreateUser(ctx *gin.Context) {
 }
 
 // Метод `userExists` обрабатывает GET-запрос на проверку существования пользователя по имени.
-func (s *Rest) userExists(ctx *gin.Context) {
-	ok, err := s.service.UserExists(ctx, ctx.Param("name"))
+func (g *Rest) userExists(ctx *gin.Context) {
+	ok, err := g.service.UserExists(ctx, ctx.Param("name"))
 	if err != nil {
 		ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -41,7 +43,7 @@ func (s *Rest) userExists(ctx *gin.Context) {
 }
 
 // метод сохранение закладок для пользователя
-func (q *Rest) SaveFavorites(ctx *gin.Context) {
+func (g *Rest) SaveFavorites(ctx *gin.Context) {
 
 	login := ctx.Param("login")
 	var favoriteReq models.FavoriteCity
@@ -60,7 +62,7 @@ func (q *Rest) SaveFavorites(ctx *gin.Context) {
 
 }
 
-func (q *Rest) GetFavorites(ctx *gin.Context) {
+func (g *Rest) GetFavorites(ctx *gin.Context) {
 	login := ctx.Param("login")
 	favorites, ok := models.Favorites[login]
 	if !ok {
@@ -69,7 +71,7 @@ func (q *Rest) GetFavorites(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, favorites)
 }
 
-func (q *Rest) createFavorite(ctx *gin.Context) {
+func (g *Rest) createFavorite(ctx *gin.Context) {
 
 	username, ok := GetUserFromContext(ctx)
 	if !ok {
@@ -83,7 +85,7 @@ func (q *Rest) createFavorite(ctx *gin.Context) {
 	}
 
 	// Использование извлеченного имени пользователя для сохранения избранного
-	if err := q.service.SaveFavorite(ctx, username, favorite); err != nil {
+	if err := g.service.SaveFavorite(ctx, username, favorite); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save favorite"})
 		return
 	}
@@ -91,7 +93,7 @@ func (q *Rest) createFavorite(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Favorite saved successfully"})
 }
 
-func (q *Rest) handleCurrentWeather(ctx *gin.Context) {
+func (g *Rest) handleCurrentWeather(ctx *gin.Context) {
 
 	username, ok := GetUserFromContext(ctx)
 	if !ok {
@@ -102,7 +104,7 @@ func (q *Rest) handleCurrentWeather(ctx *gin.Context) {
 
 	if city == "" {
 		// Если город не указан, получаем список избранных городов пользователя
-		favorites, err := q.service.GetFavorites(ctx, username)
+		favorites, err := g.service.GetFavorites(ctx, username)
 		if err != nil || len(favorites) == 0 {
 			// Если у пользователя нет избранных городов, используем город по умолчанию
 			city = config.DefoultCity
@@ -112,7 +114,7 @@ func (q *Rest) handleCurrentWeather(ctx *gin.Context) {
 		}
 	}
 
-	weatherData, err := q.service.GetCurrentWeather(ctx, config.Lang)
+	weatherData, err := g.service.GetCurrentWeather(ctx, config.Lang)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get current weather"})
 		return
@@ -122,12 +124,12 @@ func (q *Rest) handleCurrentWeather(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, weatherData)
 }
 
-func (q *Rest) getFavorites(ctx *gin.Context) {
+func (g *Rest) getFavorites(ctx *gin.Context) {
 	username, ok := GetUserFromContext(ctx)
 	if !ok {
 		return
 	}
-	favorites, err := q.service.GetFavorites(ctx, username)
+	favorites, err := g.service.GetFavorites(ctx, username)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get favorites"})
 		return
@@ -149,17 +151,35 @@ func GetUserFromContext(ctx *gin.Context) (string, bool) {
 	return username, true
 }
 
-func (q *Rest) deleteFavorite(ctx *gin.Context) {
+func (g *Rest) deleteFavorite(ctx *gin.Context) {
 	username, ok := GetUserFromContext(ctx)
 	if !ok {
 		return
 	}
 
 	city := ctx.Param("city")
-	if err := q.service.DeleteFavorite(ctx, username, city); err != nil {
+	if err := g.service.DeleteFavorite(ctx, username, city); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete favorite"})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Favorite deleted successfully"})
+}
+
+
+func generateTokenUser(ctx *gin.Context, login string) string {
+	userJSON, _ := json.Marshal(map[string]string{"login": login})
+	return base64.StdEncoding.EncodeToString(userJSON)
+}
+
+
+ func(g *Rest) login(ctx *gin.Context) {
+	var user models.LoginRequest
+	if err := ctx.BindJSON(&user); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	token := generateTokenUser(models.Login)
+	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }

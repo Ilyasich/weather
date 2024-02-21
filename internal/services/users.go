@@ -16,6 +16,7 @@ type UsersRepository interface {
 	SaveFavorite(userToken string, favorite models.FavoriteCity) error
 	DeleteFavorite(userToken, city string) error
 	SaveToken(token string, username string)
+	GetUserToken(token string) (string, bool)
 }
 
 // Эта структура используется для предоставления сервисных функций, связанных с пользователями.
@@ -58,3 +59,13 @@ func (s *Service) SaveFavorite(ctx context.Context, userToken string, favorite m
 func (s *Service) DeleteFavorite(ctx context.Context, userToken, city string) error {
 	return s.repo.DeleteFavorite(userToken, city)
 }
+
+func (s *Service) SaveToken(ctx context.Context, token string, username string) error {
+	s.repo.SaveToken(token, username)
+	return nil
+}
+
+func (s *Service) GetUserToken(ctx context.Context, token string) (string, bool) {
+	return s.repo.GetUserToken(token)
+}
+
