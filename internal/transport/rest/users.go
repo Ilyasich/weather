@@ -1,8 +1,8 @@
 package rest
 
 import (
-	"encoding/base64"
-	"encoding/json"
+	// "encoding/base64"
+	// "encoding/json"
 	"net/http"
 
 	"github.com/Ilyasich/weather/internal/config"
@@ -170,27 +170,27 @@ func (g *Rest) deleteFavorite(ctx *gin.Context) {
 //Не понимаю как сделатьЖ Реализовать POST запрос:
 //login: Возвращение токена. В теле сообщения передаем логин пользователя. Токен должен быть сформирован из логина пользователя, преобразованного в JSON и закодированного в base64.
 //функция для генерации токена
-func(g *Rest) generateToken(ctx *gin.Context, login string) {
-	userData := loginRequest.User
-	userDataJson, _ := json.Marshal(userData)
-	token := base64.StdEncoding.EncodeToString(userDataJson)
+// func(g *Rest) generateToken(ctx *gin.Context, login string) {
+// 	userData := loginRequest.User
+// 	userDataJson, _ := json.Marshal(userData)
+// 	token := base64.StdEncoding.EncodeToString(userDataJson)
 
-	// Сохранение токена в репозитории
-	g.service.SaveToken(token, userData)
+// 	// Сохранение токена в репозитории
+// 	g.service.SaveToken(token, userData)
 
-	// Возврат токена пользователю
-	ctx.JSON(http.StatusOK, gin.H{"token": token})
+// 	// Возврат токена пользователю
+// 	ctx.JSON(http.StatusOK, gin.H{"token": token})
 
-}
+// }
 
-//метод для входа пользователя
- func(g *Rest) login(ctx *gin.Context, login string) {
-	var user models.LoginRequest
-	if err := ctx.BindJSON(&user); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+// //метод для входа пользователя
+//  func(g *Rest) login(ctx *gin.Context, login string) {
+// 	var user models.LoginRequest
+// 	if err := ctx.BindJSON(&user); err != nil {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
 
-	token := generateToken(login)//
-	ctx.JSON(http.StatusOK, gin.H{"token": token})
-}
+// 	token := generateToken(login)//
+// 	ctx.JSON(http.StatusOK, gin.H{"token": token})
+// }
