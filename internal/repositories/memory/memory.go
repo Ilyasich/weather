@@ -9,6 +9,8 @@ import (
 
 )
 
+var favorites = make(map[string][]models.FavoriteCity)
+
 //будет использоваться для хранения пользователей.
 type Repository struct {
 	users []models.User

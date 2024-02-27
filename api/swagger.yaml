@@ -31,7 +31,7 @@ paths:
               schema: 
                 $ref: "#/components/schemas/Status"
         "404":
-          description: Not found
+          description: Пользователь не найден
           content: {}
 components:
   securitySchemes:
@@ -48,8 +48,8 @@ components:
         status:
           type: boolean
           description: User exists
-    CreateUser:
-      required:
+    CreateUser: 
+      required: 
       - api-key
       - login
       type: object

@@ -1,12 +1,13 @@
 package rest
 
 import (
-	// "encoding/base64"
-	// "encoding/json"
+	"encoding/base64"
+	"encoding/json"
 	"net/http"
 
 	"github.com/Ilyasich/weather/internal/config"
 	"github.com/Ilyasich/weather/internal/models"
+	"github.com/Ilyasich/weather/internal/repositories/memory"
 
 	"github.com/gin-gonic/gin"
 )
@@ -58,13 +59,13 @@ func (g *Rest) SaveFavorites(ctx *gin.Context) {
 		Parameters: favoriteReq.Parameters,
 	}
 
-	models.Favorites[login] = append(models.Favorites[login], f)
+	memory.favorites[login] = append(memory.favorites[login], f)
 
 }
 
 func (g *Rest) GetFavorites(ctx *gin.Context) {
 	login := ctx.Param("login")
-	favorites, ok := models.Favorites[login]
+	favorites, ok := memory.favorites[login]
 	if !ok {
 		ctx.JSON(http.StatusOK, gin.H{"favorites": models.FavoriteCity{}})
 	}
@@ -167,30 +168,28 @@ func (g *Rest) deleteFavorite(ctx *gin.Context) {
 }
 
 
-//Не понимаю как сделатьЖ Реализовать POST запрос:
-//login: Возвращение токена. В теле сообщения передаем логин пользователя. Токен должен быть сформирован из логина пользователя, преобразованного в JSON и закодированного в base64.
-//функция для генерации токена
-// func(g *Rest) generateToken(ctx *gin.Context, login string) {
-// 	userData := loginRequest.User
-// 	userDataJson, _ := json.Marshal(userData)
-// 	token := base64.StdEncoding.EncodeToString(userDataJson)
+// функция для генерации токена
+func(g *Rest) GenerateToken(ctx *gin.Context) (login string) {
+	var loginRequest models.LoginRequest
+	userData := loginRequest.User
+	userDataJson, _ := json.Marshal(userData)
+	token := base64.StdEncoding.EncodeToString(userDataJson)
 
-// 	// Сохранение токена в репозитории
-// 	g.service.SaveToken(token, userData)
+	// Сохранение токена в репозитории
+	g.service.SaveToken(ctx ,token, userData)
 
-// 	// Возврат токена пользователю
-// 	ctx.JSON(http.StatusOK, gin.H{"token": token})
+	// Возврат токена пользователю
+	ctx.JSON(http.StatusOK, gin.H{"token": token})
+	return token
+}
 
-// }
+//метод для входа пользователя
+ func(g *Rest) login(ctx *gin.Context, login string) {
+	var user models.LoginRequest
+	if err := ctx.BindJSON(&user); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-// //метод для входа пользователя
-//  func(g *Rest) login(ctx *gin.Context, login string) {
-// 	var user models.LoginRequest
-// 	if err := ctx.BindJSON(&user); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-
-// 	token := generateToken(login)//
-// 	ctx.JSON(http.StatusOK, gin.H{"token": token})
-// }
+	ctx.JSON(http.StatusOK, gin.H{"token": login})
+}

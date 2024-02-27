@@ -1,6 +1,5 @@
 package models
 
-var Favorites = make(map[string][]FavoriteCity)
 
 type User struct {
 	Name string `json:"name"`

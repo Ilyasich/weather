@@ -12,6 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
+
 type Rest struct {
 	lg *zap.SugaredLogger
 	service *services.Service
@@ -42,7 +43,7 @@ func NewServer(host string, service *services.Service) *gin.Engine {
 
 	g.GET("/users/:name/exists", rest.userExists) //проверка существования пользователя
 	g.POST("/users", rest.createUser)
-	//g.POST("/login", rest.login)
+	g.POST("/login", rest.login)
 
 
 
