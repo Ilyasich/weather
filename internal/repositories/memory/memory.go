@@ -1,7 +1,11 @@
 package memory
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/Ilyasich/weather/internal/models"
+	"github.com/Ilyasich/weather/internal/pkg/tracing"
 
 )
 

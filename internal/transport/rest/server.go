@@ -2,6 +2,7 @@ package rest
 
 import (
 	"io"
+	"net/http"
 
 	"github.com/Ilyasich/weather/internal/config"
 	"github.com/Ilyasich/weather/internal/services"
@@ -16,7 +17,7 @@ type Rest struct {
 	service *services.Service
 }
 
-func NewServer(service *services.Service) *gin.Engine {
+func NewServer(host string, service *services.Service) *gin.Engine {
 	if config.DebugMode {
 		gin.SetMode(gin.DebugMode)
 	} else {
@@ -51,11 +52,12 @@ func NewServer(service *services.Service) *gin.Engine {
 	g.GET("/favorites", rest.getFavorites)
 	g.DELETE("/favorites/:city", rest.deleteFavorite)
 
+	
+
+	return &http.Server{
+		Addr: cfg.ServerHost,
+		Handler: r,
+	}
+
 	return g
-
-	// return &http.Server{
-	// 	Addr: cfg.ServerHost,
-	// 	Handler: r,
-	// }
-
 }
