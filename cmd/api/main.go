@@ -12,7 +12,7 @@ import (
 
 	"github.com/Ilyasich/weather/internal/services"
 	"github.com/Ilyasich/weather/internal/transport/rest"
-	"github.com/Ilyasich/weather/internal/transport/memory"
+	"github.com/Ilyasich/weather/internal/repositories/memory"
 	"github.com/Ilyasich/weather/internal/config"
 	
 	"go.uber.org/zap"
@@ -53,15 +53,15 @@ func main() {
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		lg.Panicln(err)
 	}
-}
 
 
 
-	//rest.NewServer(*services.Service).Run(":8080")
-	//repo := &memory.Repository{}
-	//service := services.New(repo)
+
+	// rest.NewServer(*services.Service).Run(":8080")
+	// repo := &memory.Repository{}
+	// service := services.New(repo)
 
 	
-// 	server := rest.NewServer(&services.Service{})
-// 	server.Run(":8080")
-//    }
+	// server := rest.NewServer(&services.Service{})
+	// server.Run(":8080")
+   }

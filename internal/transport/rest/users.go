@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"net/http"
+	"fmt"
 
 	"github.com/Ilyasich/weather/internal/config"
 	"github.com/Ilyasich/weather/internal/models"
@@ -168,28 +169,36 @@ func (g *Rest) deleteFavorite(ctx *gin.Context) {
 }
 
 
-// функция для генерации токена
-func(g *Rest) GenerateToken(ctx *gin.Context) (login string) {
+
+//- объявление функции `login`, которая принимает указатель на структуру `Rest` и указатель на объект `gin.Context`.
+func (r *Rest) login(ctx *gin.Context) {
 	var loginRequest models.LoginRequest
-	userData := loginRequest.User
-	userDataJson, _ := json.Marshal(userData)
-	token := base64.StdEncoding.EncodeToString(userDataJson)
-
-	// Сохранение токена в репозитории
-	g.service.SaveToken(ctx ,token, userData)
-
-	// Возврат токена пользователю
-	ctx.JSON(http.StatusOK, gin.H{"token": token})
-	return token
-}
-
-//метод для входа пользователя
- func(g *Rest) login(ctx *gin.Context, login string) {
-	var user models.LoginRequest
-	if err := ctx.BindJSON(&user); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	//попытка привязать JSON данные из запроса к структуре `loginRequest`. Если произошла ошибка, то возвращается сообщение об ошибке "Invalid request" и код состояния HTTP 400.
+	if err := ctx.BindJSON(&loginRequest); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"token": login})
+	fmt.Println(loginRequest.User)//вывод пользователя в консоль
+	// проверка существования пользователя с указанным именем. Если произошла ошибка при проверке, возвращается сообщение об ошибке "An error occurred" и код состояния HTTP 500.
+	exists, err := r.service.UserExists(ctx, loginRequest.User)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "An error occurred"})
+		return
+	}
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User does not exist"})
+		return
+	}
+
+	// Генерация токена
+	userData := loginRequest.User//присвоение имени пользователя переменной `userData`.
+	userDataJson, _ := json.Marshal(userData)//преобразование имени пользователя в формат JSON
+	token := base64.StdEncoding.EncodeToString(userDataJson)//кодирование данных пользователя в base64 для создания токена.
+
+	// Сохранение токена в репозитории
+	r.service.SaveToken(ctx, token, userData)
+
+	// Возврат токена пользователю в формате JSON и код состояния HTTP 200.
+	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }

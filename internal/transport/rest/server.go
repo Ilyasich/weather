@@ -12,13 +12,12 @@ import (
 	"go.uber.org/zap"
 )
 
-
 type Rest struct {
-	lg *zap.SugaredLogger
+	lg      *zap.SugaredLogger
 	service *services.Service
 }
 
-func NewServer(host string, service *services.Service) *gin.Engine {
+func NewServer(lg *zap.SugaredLogger, cfg config.ServerConfig, service services.Service) *http.Server {
 	if config.DebugMode {
 		gin.SetMode(gin.DebugMode)
 	} else {
@@ -28,9 +27,7 @@ func NewServer(host string, service *services.Service) *gin.Engine {
 	gin.DefaultWriter = io.Discard
 	g := gin.Default()
 
-
-	rest := Rest{lg, service}
-	
+	rest := Rest{lg, &service}
 
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"*"}
@@ -45,20 +42,14 @@ func NewServer(host string, service *services.Service) *gin.Engine {
 	g.POST("/users", rest.createUser)
 	g.POST("/login", rest.login)
 
-
-
-	
 	g.GET("/weather/current", rest.handleCurrentWeather) //получение текущая погода
 	g.POST("/favorites", rest.createFavorite)
 	g.GET("/favorites", rest.getFavorites)
 	g.DELETE("/favorites/:city", rest.deleteFavorite)
 
-	
-
 	return &http.Server{
-		Addr: cfg.ServerHost,
-		Handler: r,
+		Addr:    cfg.ServerHost,
+		Handler: g,
 	}
 
-	return g
 }
