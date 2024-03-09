@@ -8,12 +8,13 @@ import (
 	//"github.com/Ilyasich/weather/internal/pkg/tracing"
 )
 
-var favorites = make(map[string]models.FavoriteCity)
+
 
 
 // будет использоваться для хранения пользователей.
 type Repository struct {
 	users []models.User
+	favoritMap map[string][]models.FavoriteCity
 }
 
 // DeleteFavorite implements services.UsersRepository.
@@ -31,9 +32,9 @@ func (*Repository) GetFavorite(userToken string) ([]models.FavoriteCity, error) 
 	panic("unimplemented")
 }
 
-// GetFavorites implements services.UsersRepository.
-func (*Repository) GetFavorites(userToken string) ([]models.FavoriteCity, error) {
-	panic("unimplemented")
+// GetFavorites 
+func (r *Repository) GetFavorites(userToken string) ([]models.FavoriteCity, error) {
+	return r.favoritMap[userToken], nil
 }
 
 // GetUserToken implements services.UsersRepository.
@@ -41,9 +42,10 @@ func (*Repository) GetUserToken(token string) (string, bool) {
 	panic("unimplemented")
 }
 
-// SaveFavorite implements services.UsersRepository.
-func (*Repository) SaveFavorite(userToken string, favorite models.FavoriteCity) error {
-	panic("unimplemented")
+// SaveFavorite .
+func (r *Repository) SaveFavorite(userToken string, favorite models.FavoriteCity) error {
+	r.favoritMap[userToken] = append(r.favoritMap[userToken], favorite)
+	return nil
 }
 
 // SaveToken implements services.UsersRepository.

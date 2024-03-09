@@ -49,6 +49,7 @@ components:
           type: boolean
           description: User exists
     CreateUser: 
+    
       required: 
       - api-key
       - login

@@ -1,0 +1,6 @@
+{"L":"INFO","T":"2024-03-09T16:48:45.161+0400","C":"rest/server.go:38","M":"http request/users"}
+{"L":"INFO","T":"2024-03-09T16:49:08.660+0400","C":"rest/server.go:38","M":"http request/users"}
+{"L":"INFO","T":"2024-03-09T16:49:54.180+0400","C":"rest/server.go:38","M":"http request/user/:/user/:name"}
+{"L":"INFO","T":"2024-03-09T16:50:45.586+0400","C":"rest/server.go:38","M":"http request//weather/current"}
+{"L":"INFO","T":"2024-03-09T16:51:14.380+0400","C":"rest/server.go:38","M":"http request/weather/current"}
+{"L":"INFO","T":"2024-03-09T16:52:03.519+0400","C":"rest/server.go:38","M":"http request/favorites"}

@@ -3,12 +3,11 @@ package rest
 import (
 	"encoding/base64"
 	"encoding/json"
-	"net/http"
 	"fmt"
+	"net/http"
 
 	"github.com/Ilyasich/weather/internal/config"
 	"github.com/Ilyasich/weather/internal/models"
-	"github.com/Ilyasich/weather/internal/repositories/memory"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,36 +44,7 @@ func (g *Rest) userExists(ctx *gin.Context) {
 }
 
 // метод сохранение закладок для пользователя
-func (g *Rest) SaveFavorites(ctx *gin.Context) {
-
-	login := ctx.Param("login")
-	var favoriteReq models.FavoriteCity
-	err := ctx.ShouldBindJSON(&favoriteReq)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	f := models.FavoriteCity{
-		City:       favoriteReq.City,
-		Parameters: favoriteReq.Parameters,
-	}
-
-	memory.favorites[login] = append(memory.favorites[login], f)
-
-}
-
-func (g *Rest) GetFavorites(ctx *gin.Context) {
-	login := ctx.Param("login")
-	favorites, ok := memory.favorites[login]
-	if !ok {
-		ctx.JSON(http.StatusOK, gin.H{"favorites": models.FavoriteCity{}})
-	}
-	ctx.JSON(http.StatusOK, favorites)
-}
-
 func (g *Rest) createFavorite(ctx *gin.Context) {
-
 	username, ok := GetUserFromContext(ctx)
 	if !ok {
 		return
@@ -86,13 +56,28 @@ func (g *Rest) createFavorite(ctx *gin.Context) {
 		return
 	}
 
-	// Использование извлеченного имени пользователя для сохранения избранного
 	if err := g.service.SaveFavorite(ctx, username, favorite); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save favorite"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Filed to save favorite"})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Favorite saved successfully"})
+
+}
+
+func (g *Rest) getFavorites(ctx *gin.Context) {
+	username, ok := GetUserFromContext(ctx)
+	if !ok {
+		return
+	}
+
+	favorites, err := g.service.GetFavorites(ctx, username)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get favorites"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"favorites": favorites})
 }
 
 func (g *Rest) handleCurrentWeather(ctx *gin.Context) {
@@ -126,19 +111,6 @@ func (g *Rest) handleCurrentWeather(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, weatherData)
 }
 
-func (g *Rest) getFavorites(ctx *gin.Context) {
-	username, ok := GetUserFromContext(ctx)
-	if !ok {
-		return
-	}
-	favorites, err := g.service.GetFavorites(ctx, username)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get favorites"})
-		return
-	}
-	ctx.JSON(http.StatusOK, gin.H{"favorites": favorites})
-}
-
 func GetUserFromContext(ctx *gin.Context) (string, bool) {
 	usernameInterface, exists := ctx.Get("username")
 	if !exists {
@@ -168,9 +140,7 @@ func (g *Rest) deleteFavorite(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Favorite deleted successfully"})
 }
 
-
-
-//- объявление функции `login`, которая принимает указатель на структуру `Rest` и указатель на объект `gin.Context`.
+// - объявление функции `login`, которая принимает указатель на структуру `Rest` и указатель на объект `gin.Context`.
 func (r *Rest) login(ctx *gin.Context) {
 	var loginRequest models.LoginRequest
 	//попытка привязать JSON данные из запроса к структуре `loginRequest`. Если произошла ошибка, то возвращается сообщение об ошибке "Invalid request" и код состояния HTTP 400.
@@ -179,7 +149,7 @@ func (r *Rest) login(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println(loginRequest.User)//вывод пользователя в консоль
+	fmt.Println(loginRequest.User) //вывод пользователя в консоль
 	// проверка существования пользователя с указанным именем. Если произошла ошибка при проверке, возвращается сообщение об ошибке "An error occurred" и код состояния HTTP 500.
 	exists, err := r.service.UserExists(ctx, loginRequest.User)
 	if err != nil {
@@ -192,9 +162,9 @@ func (r *Rest) login(ctx *gin.Context) {
 	}
 
 	// Генерация токена
-	userData := loginRequest.User//присвоение имени пользователя переменной `userData`.
-	userDataJson, _ := json.Marshal(userData)//преобразование имени пользователя в формат JSON
-	token := base64.StdEncoding.EncodeToString(userDataJson)//кодирование данных пользователя в base64 для создания токена.
+	userData := loginRequest.User                            //присвоение имени пользователя переменной `userData`.
+	userDataJson, _ := json.Marshal(userData)                //преобразование имени пользователя в формат JSON
+	token := base64.StdEncoding.EncodeToString(userDataJson) //кодирование данных пользователя в base64 для создания токена.
 
 	// Сохранение токена в репозитории
 	r.service.SaveToken(ctx, token, userData)

@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func authMiddlevare(service *services.Service) gin.HandlerFunc {
+func AuthMiddlevare(service *services.Service) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		tokenAuth := ctx.GetHeader("Authorization")
 		if tokenAuth == "" {
