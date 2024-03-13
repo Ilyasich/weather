@@ -5,13 +5,16 @@ type User struct {
 	Name string `json:"name"`
 }
 
-
-type Favorite struct {
+type FavoriteCity struct {
 	City       string   `json:"city"`
-	Paramertrs []string `json:"parametrs"`
+	Parameters []string `json:"parameters"`
 }
 
-type CurrentWeatherResponse struct {
+type LoginRequest struct {
+	User string `json:"user"`
+}
+
+type WeatherResponse struct {
 	Location struct {
 		Name      string  `json:"name"`
 		Region    string  `json:"region"`

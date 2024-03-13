@@ -1,0 +1,64 @@
+openapi: 3.0.1
+info:
+  title: Bit School HTTP
+  version: 1.0.0
+servers:
+- url: http://localhost:8080
+tags:
+- name: users
+- name: weather
+paths:
+  /users/:name/exists:
+    get:
+      tags:
+      - users
+      parameters:
+        - in: path
+          name: name
+          schema:
+            type: string
+          required: true
+          description: user name to find
+      security:
+        - ApiKeyAuth: []
+      summary: Проверка что пользователь существует
+      operationId: userExists
+      responses:
+        "200":
+          description: Пользователь существует
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/Status"
+        "404":
+          description: Пользователь не найден
+          content: {}
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+  schemas:
+    Status:
+      type: object
+      required:
+      - status
+      properties:
+        status:
+          type: boolean
+          description: User exists
+    CreateUser: 
+    
+      required: 
+      - api-key
+      - login
+      type: object
+      properties:
+        login:
+          type: string
+          example: dima
+        api-key:
+          type: string
+          example: fef6a7d2-13e2-48a2-9839-ec24ce7c5d0b
+x-original-swagger-version: "2.0"

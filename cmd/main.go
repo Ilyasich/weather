@@ -1,6 +1,7 @@
 package main
 
 import (
+
 	"context"
 	"errors"
 	"net/http"
@@ -9,25 +10,25 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Ilyasich/weather/internal/config"
-	
-	"github.com/Ilyasich/weather/internal/repostories/memory"
 	"github.com/Ilyasich/weather/internal/services"
 	"github.com/Ilyasich/weather/internal/transport/rest"
+	"github.com/Ilyasich/weather/internal/repositories/memory"
+	"github.com/Ilyasich/weather/internal/config"
+	
 	"go.uber.org/zap"
 )
 
+
 func main() {
-	//
+
 	logCfg := zap.NewDevelopmentConfig()
 	logCfg.OutputPaths = []string{"server.log"}
 	logCfg.Encoding = "json"
 
 	logger, _ := logCfg.Build()
 	defer logger.Sync()
-	lg := logger.Sugar()//список интерфейсов с логами
+	lg := logger.Sugar()
 
-	//конфигурация сервера
 	cfg, err := config.Read()
 	if err != nil {
 		lg.Fatal(err)
@@ -38,7 +39,6 @@ func main() {
 
 	server := rest.NewServer(lg, cfg.Server, service)
 
-	//мягкая остановка сервера
 	go func() {
 		quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
@@ -53,4 +53,15 @@ func main() {
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		lg.Panicln(err)
 	}
-}
+
+
+
+//
+	// rest.NewServer(*services.Service).Run(":8080")
+	// repo := &memory.Repository{}
+	// service := services.New(repo)
+
+	
+	// server := rest.NewServer(&services.Service{})
+	// server.Run(":8080")
+   }
