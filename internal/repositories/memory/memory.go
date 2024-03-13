@@ -17,6 +17,8 @@ type Repository struct {
 	favoritMap map[string][]models.FavoriteCity
 }
 
+
+
 // DeleteFavorite implements services.UsersRepository.
 func (*Repository) DeleteFavorite(userToken string, city string) error {
 	panic("unimplemented")
