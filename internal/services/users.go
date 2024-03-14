@@ -19,6 +19,7 @@ type UsersRepository interface {
 	SaveToken(token string, username string)
 	GetUserToken(token string) (string, bool)
 	DellUsers(user string) error
+	GetUserFavorit(name string) error
 }
 
 // Эта структура используется для предоставления сервисных функций, связанных с пользователями.
@@ -77,3 +78,27 @@ func (s *Service) GetUserToken(ctx context.Context, token string) (string, bool)
 	return s.repo.GetUserToken(token)
 }
 
+func (s *Service) DeleteUserFavorite(name string, city string) bool {
+	if !s.repo.FindUser(name) {
+		return false
+	}
+
+	fav, _ := s.repo.GetUserFavorit(name)
+
+	nameFav := -1
+
+	for i, ell := range fav {
+		if ell.City == city {
+			nameFav = i
+			break
+		}
+	}
+
+	if nameFav == -1 {
+		return false
+	}
+
+	fav = append(fav[:nameFav], fav[nameFav+1:]...)
+	return s.GetFavorites(name, fav)
+	
+}
