@@ -30,7 +30,7 @@ func (r *Repository) DeleteFavorite(userToken string, city string) error {
 
 	for i, fav := range favorit {
 		if fav.City == city {
-			r.favoritMap[userToken] = append(favorit[:i], favorit[i+1:]... )
+			r.favoritMap[userToken] = append(favorit[:i] )
 			return nil
 		}
 	}
@@ -43,7 +43,11 @@ func (r *Repository) DeleteFavorite(userToken string, city string) error {
 
 // GetFavorites 
 func (r *Repository) GetFavorite(userToken string) ([]models.FavoriteCity, error) {
-	return r.favoritMap[userToken], nil
+	r, ok := r.favoritMap[userToken]
+if !ok {
+return nil, errors.New("")
+}
+return r, nil
 }
 
 // GetUserToken implements services.UsersRepository.???
