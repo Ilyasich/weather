@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/Ilyasich/weather/internal/models"
 )
@@ -17,6 +18,8 @@ type UsersRepository interface {
 	DeleteFavorite(userToken, city string) error
 	SaveToken(token string, username string)
 	GetUserToken(token string) (string, bool)
+	DellUsers(user string) error
+	GetUserFavorit(name string) error
 }
 
 // Эта структура используется для предоставления сервисных функций, связанных с пользователями.
@@ -31,6 +34,10 @@ func New(repo UsersRepository) Service {
 	}
 }
 
+// func (s *Service) DellUsers(ctx context.Context, models.User) error {
+// 	return s.repo.DellUsers(user)
+// }
+
 // Метод структуры принимает контекст и пользователя `user` типа `models.User` в качестве параметров. Внутри метода вызывается метод `AddUser` чтобы добавить нового пользователя.
 func (s *Service) CreateNewUser(ctx context.Context, user models.User) error {
 	s.repo.AddUser(user)
@@ -38,9 +45,11 @@ func (s *Service) CreateNewUser(ctx context.Context, user models.User) error {
 }
 
 // Это метод `UserExists` структуры `Service`. Внутри метода вызывается метод `FindUser` репозитория `s.repo`, чтобы проверить, существует ли пользователь с указанным именем.
-func (s *Service) UserExists(ctx context.Context, name string) (bool, error) {
-	ok := s.repo.FindUser(name)
-	return ok, nil
+func (s *Service) UserExists(name string) bool {
+	if s.repo.FindUser(name) {
+		fmt.Println("found same user")
+	}
+	return false
 }
 
 // метод получить favorit
@@ -69,3 +78,27 @@ func (s *Service) GetUserToken(ctx context.Context, token string) (string, bool)
 	return s.repo.GetUserToken(token)
 }
 
+func (s *Service) DeleteUserFavorite(name string, city string) bool {
+	if !s.repo.FindUser(name) {
+		return false
+	}
+
+	fav, _ := s.repo.GetUserFavorit(name)
+
+	nameFav := -1
+
+	for i, ell := range fav {
+		if ell.City == city {
+			nameFav = i
+			break
+		}
+	}
+
+	if nameFav == -1 {
+		return false
+	}
+
+	fav = append(fav[:nameFav], fav[nameFav+1:]...)
+	return s.GetFavorites(name, fav)
+	
+}

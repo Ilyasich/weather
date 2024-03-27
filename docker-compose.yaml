@@ -1,15 +1,41 @@
-version: '3'
-
+version: "3.8"
 services:
-  pulse:
-    build:
-      context: . 
-      dockerfile: Dockerfile
+  postgres:
+    image: postgres:15.3-bullseye
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: app_db
     ports:
-      - "8080:8080" 
-    restart: always
-    environment: 
-      HELLO_MESSAGE: It is hello msg from env
+      - "5432:5432"
     volumes:
-      - ./data:/app/data
+      - postgres_data:/var/lib/postgresql/data/
+      
+volumes:
+  postgres_data:
+  user_postgres_data:
+
+  
+
+
+
+
+# version: '3'
+
+# services:
+#   pulse:
+#     build:
+#       context: . 
+#       dockerfile: Dockerfile
+#     ports:
+#       - "8080:8080" 
+#     restart: always
+#     environment: 
+#       HELLO_MESSAGE: It is hello msg from env
+#     volumes:
+#       - ./data:/app/data
+      
+
+
       

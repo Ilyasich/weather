@@ -1,9 +1,11 @@
 BIN_NAME=server-exe
+
 DEBUG=true
 
 run: 
 	@echo "Начинаю запускать сервер через makefile"
 	@go run ./cmd/api
+	@source .env && go run ./cmd/api -api_key=$$API_KEY 
 
 dev:
 	@DEBUG=$(DEBUG) go run ./cmd/api

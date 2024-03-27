@@ -172,3 +172,5 @@ func (r *Rest) login(ctx *gin.Context) {
 	// Возврат токена пользователю в формате JSON и код состояния HTTP 200.
 	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }
+
+
