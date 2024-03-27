@@ -1,8 +1,10 @@
 package models
 
+
 type User struct {
 	Name string `json:"name"`
 }
+
 
 type FavoriteCity struct {
 	City       string   `json:"city"`
